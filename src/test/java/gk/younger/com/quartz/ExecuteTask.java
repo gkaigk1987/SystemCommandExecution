@@ -21,6 +21,7 @@ public class ExecuteTask {
 	}
 
 	public String exec() {
+		System.out.println("执行"+info);
 		return getInfo();
 	}
 

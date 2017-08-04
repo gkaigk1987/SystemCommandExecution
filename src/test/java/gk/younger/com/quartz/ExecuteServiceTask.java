@@ -32,5 +32,16 @@ public class ExecuteServiceTask {
 		executorService.shutdown();
 		System.out.println("executorService.shutdown()");
 	}
+	
+	public void execute2(List<Integer> list) {
+		CronTriggerExample example = new CronTriggerExample();
+		for (Integer i : list) {
+			try {
+				example.run("测试执行" + i);
+			} catch (SchedulerException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 }

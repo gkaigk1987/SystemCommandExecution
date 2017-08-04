@@ -26,8 +26,8 @@ public class CronTriggerExample {
 //		Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
 		JobDetail jobDetail = JobBuilder.newJob(MyJob.class).withIdentity(signal+"task1", "group1")
 									.usingJobData("signal", signal).build();
-		CronTrigger cronTrigger = TriggerBuilder.newTrigger().startNow().withIdentity(signal+"trigger1","group1")
-												.withSchedule(CronScheduleBuilder.cronSchedule("0 10/1 14-15 * * ?")).build();
+		CronTrigger cronTrigger = TriggerBuilder.newTrigger().withIdentity(signal+"trigger1","group1")
+												.withSchedule(CronScheduleBuilder.cronSchedule("0 0/1 13-14 * * ?")).build();
 		scheduler.scheduleJob(jobDetail, cronTrigger);
 		scheduler.start();
 	}
