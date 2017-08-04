@@ -1,5 +1,7 @@
 package gk.younger.com.quartz;
 
+import java.util.Date;
+
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -16,6 +18,7 @@ public class MyJob implements Job {
 		String signal = dataMap.getString("signal");
 		ExecuteTask task = new ExecuteTask(signal);
 		System.out.println("MyJob execute,signal="+task.exec());
+		System.out.println(new Date());
 	}
 
 }

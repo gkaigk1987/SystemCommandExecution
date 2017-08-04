@@ -7,6 +7,8 @@ public class DatabaseServiceBean {
 	private String serviceId;
 	
 	private String url;
+	
+	
 
 	public String getId() {
 		return id;
