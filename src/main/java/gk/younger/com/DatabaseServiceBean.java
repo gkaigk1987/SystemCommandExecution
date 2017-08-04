@@ -2,20 +2,24 @@ package gk.younger.com;
 
 public class DatabaseServiceBean {
 	
-	private String id;
+	private String databaseId;
 	
 	private String serviceId;
 	
-	private String url;
+	private String serviceUrl;
 	
+	private String testStartTime;
 	
+	private String testEndTime;
+	
+	private int testFrequenceMinutes;
 
-	public String getId() {
-		return id;
+	public String getDatabaseId() {
+		return databaseId;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setDatabaseId(String databaseId) {
+		this.databaseId = databaseId;
 	}
 
 	public String getServiceId() {
@@ -26,17 +30,37 @@ public class DatabaseServiceBean {
 		this.serviceId = serviceId;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getServiceUrl() {
+		return serviceUrl;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public void setServiceUrl(String serviceUrl) {
+		this.serviceUrl = serviceUrl;
 	}
 
-	@Override
-	public String toString() {
-		return "DatabaseServiceBean [id=" + id + ", serviceId=" + serviceId + ", url=" + url + "]";
+	public String getTestStartTime() {
+		return testStartTime;
 	}
+
+	public void setTestStartTime(String testStartTime) {
+		this.testStartTime = testStartTime;
+	}
+
+	public String getTestEndTime() {
+		return testEndTime;
+	}
+
+	public void setTestEndTime(String testEndTime) {
+		this.testEndTime = testEndTime;
+	}
+
+	public int getTestFrequenceMinutes() {
+		return testFrequenceMinutes;
+	}
+
+	public void setTestFrequenceMinutes(int testFrequenceMinutes) {
+		this.testFrequenceMinutes = testFrequenceMinutes;
+	}
+
 
 }

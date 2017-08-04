@@ -93,6 +93,28 @@ public class SystemCommandRun {
 	}
 	
 	/**
+	 * 
+	 * @param serviceUrl
+	 * @param databaseId
+	 * @return
+	 * @throws IOException
+	 */
+	public void doExecute(String serviceUrl,String databaseId) throws IOException {
+		Map<String, String> properties = getCommandProperties(serviceUrl, databaseId);
+		try {
+			String responese = exec(properties.get("command"));
+			logger.info("当前执行命令的返回信息为：\n{}",responese);
+			if(StringUtils.isNotEmpty(responese)) {
+				WrkResponseBean wrkResponseBean = dealWrkResponse(responese,properties);
+				this.uploadExecuteResult(wrkResponseBean);
+			}
+		} catch (InterruptedException e) {
+			logger.error("Linux命令执行出错！wrk命令为:{}",properties.get("command"));
+			e.printStackTrace();
+		} 
+	}
+	
+	/**
 	 * 处理wrk命令执行后返回的内容
 	 * @param info
 	 */
@@ -251,8 +273,8 @@ public class SystemCommandRun {
 			ExecutorService service = Executors.newFixedThreadPool(5);
 			List<Future<WrkResponseBean>> results = new ArrayList<Future<WrkResponseBean>>();
 			for(DatabaseServiceBean bean : list) {
-				String url = bean.getUrl();
-				String databaseId = bean.getId();
+				String url = bean.getServiceUrl();
+				String databaseId = bean.getDatabaseId();
 				if(StringUtils.isNotEmpty(url)) {
 					Map<String, String> properties = getCommandProperties(url,databaseId);
 					logger.info("当前执行的wrk命令为：{}",properties.get("command"));
@@ -305,7 +327,22 @@ public class SystemCommandRun {
 	}
 	
 	/**
-	 * 数据上传到终端
+	 * 单条数据上传到终端
+	 * @param wrkResponseBean
+	 * @throws IOException
+	 */
+	public void uploadExecuteResult(WrkResponseBean wrkResponseBean) throws IOException {
+		String url = PropertiesUtil.getUserConfigProperties().getProperty("executeResponseUploadUrl");
+		JSONObject doPost = HttpClientUtil.doPost(url, genPostParams(wrkResponseBean));
+		if(doPost.getBooleanValue("succ")) {
+			logger.info("执行数据上传成功,数据库ID为{},url为{}",wrkResponseBean.getDatabaseId(),wrkResponseBean.getWrkUrl());
+		}else {
+			logger.info("执行数据上传失败,数据库ID为{},url为{}",wrkResponseBean.getDatabaseId(),wrkResponseBean.getWrkUrl());
+		}
+	}
+	
+	/**
+	 * 批量数据上传到终端
 	 * @param beans
 	 * @throws IOException
 	 */

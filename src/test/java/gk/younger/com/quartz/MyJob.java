@@ -18,7 +18,6 @@ public class MyJob implements Job {
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 		String signal = dataMap.getString("signal");
-		System.out.print("signal:"+signal+"---");
 		ExecuteTask task = new ExecuteTask(signal);
 		task.exec();
 //		System.out.println("MyJob execute,signal="+task.exec());

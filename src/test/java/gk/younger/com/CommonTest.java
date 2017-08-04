@@ -3,6 +3,7 @@ package gk.younger.com;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.http.NameValuePair;
@@ -103,6 +104,14 @@ public class CommonTest {
 		for (DatabaseServiceBean databaseServiceBean : parseArray) {
 			System.out.println(databaseServiceBean);
 		}
+	}
+	
+	@Test
+	public void test05() {
+		String time = "09:00";
+		Map<String, Integer> hourAndMinute = Util.getHourAndMinute(time);
+		System.out.println(hourAndMinute.get("hour"));
+		System.out.println(hourAndMinute.get("minute"));
 	}
 	
 

@@ -1,5 +1,7 @@
 package gk.younger.com.quartz;
 
+import java.util.List;
+
 import org.quartz.DateBuilder;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -22,13 +24,19 @@ public class SimpleTriggerExample {
 		}
 	}
 	
-	public void run() throws SchedulerException {
-		JobDetail jobDetail = JobBuilder.newJob(MyJob.class).withIdentity("task1", "group1").build();
-		SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity("trigger1","group1")
-										.withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(1)
-												.repeatForever()).startAt(DateBuilder.dateOf(16, 32, 0))
-																	.endAt(DateBuilder.dateOf(16, 34, 0)).build();
-		scheduler.scheduleJob(jobDetail, simpleTrigger);
+	public void run(List<Integer> list) throws SchedulerException {
+		for (Integer integer : list) {
+			JobDetail jobDetail = JobBuilder.newJob(MyJob.class).usingJobData("signal", "signal"+integer).withIdentity("task"+integer, "group1").build();
+			SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity("trigger"+integer,"group1")
+					.withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(1)
+							.repeatForever()).startAt(DateBuilder.dateOf(20, 15, 0))
+					.endAt(DateBuilder.dateOf(20, 20, 0)).build();
+			scheduler.scheduleJob(jobDetail, simpleTrigger);
+			if(2 == integer) {
+				scheduler.shutdown();
+				throw new RuntimeException();
+			}
+		}
 		scheduler.start();
 	}
 
