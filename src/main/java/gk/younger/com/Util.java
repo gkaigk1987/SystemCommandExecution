@@ -1,5 +1,7 @@
 package gk.younger.com;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +35,17 @@ public class Util {
 			return map;
 		}
 		return null;
+	}
+	
+	/**
+	 * 日期时间格式化
+	 * @param date
+	 * @return
+	 */
+	public static String dateFormat(Date date) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		String dateStr = sdf.format(date);
+		return dateStr;
 	}
 
 }

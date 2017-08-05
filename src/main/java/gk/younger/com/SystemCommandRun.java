@@ -16,6 +16,8 @@ import java.util.concurrent.Future;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +33,6 @@ public class SystemCommandRun {
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
-//	private ReentrantLock lock = new ReentrantLock();
-
 	/**
 	 * 执行Linux命令
 	 * @param command
@@ -75,7 +75,6 @@ public class SystemCommandRun {
 	 * @return
 	 */
 	public WrkResponseBean beforeExecute(Map<String, String> properties) {
-//		lock.lock();
 		try {
 			String responese = exec(properties.get("command"));
 			logger.info("当前执行命令的返回信息为：\n{}",responese);
@@ -86,20 +85,18 @@ public class SystemCommandRun {
 			logger.error("Linux命令执行出错！wrk命令为:{}",properties.get("command"));
 			e.printStackTrace();
 		} 
-//		finally {
-//			lock.unlock();
-//		}
 		return null;
 	}
 	
 	/**
-	 * 
+	 * 任务执行
 	 * @param serviceUrl
 	 * @param databaseId
 	 * @return
 	 * @throws IOException
+	 * @throws SchedulerException 
 	 */
-	public void doExecute(String serviceUrl,String databaseId) throws IOException {
+	public void doExecute(String serviceUrl,String databaseId,Scheduler scheduler) throws IOException, SchedulerException {
 		Map<String, String> properties = getCommandProperties(serviceUrl, databaseId);
 		try {
 			String responese = exec(properties.get("command"));
@@ -110,6 +107,7 @@ public class SystemCommandRun {
 			}
 		} catch (InterruptedException e) {
 			logger.error("Linux命令执行出错！wrk命令为:{}",properties.get("command"));
+			scheduler.shutdown();
 			e.printStackTrace();
 		} 
 	}

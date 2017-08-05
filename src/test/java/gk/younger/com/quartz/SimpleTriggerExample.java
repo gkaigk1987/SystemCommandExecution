@@ -33,7 +33,7 @@ public class SimpleTriggerExample {
 					.endAt(DateBuilder.dateOf(20, 20, 0)).build();
 			scheduler.scheduleJob(jobDetail, simpleTrigger);
 			if(2 == integer) {
-				scheduler.shutdown();
+				System.exit(0);
 				throw new RuntimeException();
 			}
 		}

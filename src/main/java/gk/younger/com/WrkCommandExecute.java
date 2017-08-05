@@ -2,7 +2,6 @@ package gk.younger.com;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -24,6 +23,7 @@ public class WrkCommandExecute {
 			remoteLocalDatabaseService = commandRun.getRemoteLocalDatabaseService();
 		} catch (IOException e) {
 			logger.error("获取配置文件信息出错！");
+			logger.error(e.getMessage());
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
@@ -40,13 +40,15 @@ public class WrkCommandExecute {
 //			logger.error("获取命令执行返回结果WrkResponseBean出错！");
 //			e.printStackTrace();
 //		}
-		WrkExecuteSimpleTrigger wrkExecuteSimpleTrigger = new WrkExecuteSimpleTrigger();
 		try {
+			WrkExecuteSimpleTrigger wrkExecuteSimpleTrigger = new WrkExecuteSimpleTrigger();
 			wrkExecuteSimpleTrigger.run(remoteLocalDatabaseService);
 		} catch (SchedulerException e) {
 			logger.error("定时任务执行出错！");
 			e.printStackTrace();
+			System.exit(0);
 		}
+		
 	}
 
 }

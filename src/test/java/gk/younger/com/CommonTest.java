@@ -2,6 +2,7 @@ package gk.younger.com;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -108,10 +109,16 @@ public class CommonTest {
 	
 	@Test
 	public void test05() {
-		String time = "09:00";
+		String time = "09:01";
 		Map<String, Integer> hourAndMinute = Util.getHourAndMinute(time);
 		System.out.println(hourAndMinute.get("hour"));
 		System.out.println(hourAndMinute.get("minute"));
+	}
+	
+	@Test
+	public void test06() {
+		String date = Util.dateFormat(new Date());
+		System.out.println(date);
 	}
 	
 
