@@ -1,6 +1,5 @@
 package gk.younger.com;
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.quartz.Job;
@@ -20,14 +19,18 @@ public class WrkExecuteJob implements Job {
 		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 		String serviceUrl = jobDataMap.getString("serviceUrl");
 		String databaseId = jobDataMap.getString("databaseId");
+		
+//		String wrkt = jobDataMap.getString("wrkt");
+//		String wrkc = jobDataMap.getString("wrkc");
+//		String wrkd = jobDataMap.getString("wrkd");
+//		String databaseServiceUrl = jobDataMap.getString("databaseServiceUrl");
+//		String executeResponseUploadUrl = jobDataMap.getString("executeResponseUploadUrl");
+//		String universityInstanceCode = jobDataMap.getString("universityInstanceCode");
+		
 		logger.info("定时任务启动，时间：{}，数据库ID：{}，服务链接：{}。",Util.dateFormat(new Date()),databaseId,serviceUrl);
 		SystemCommandRun commandRun = new SystemCommandRun();
 		try {
-			commandRun.doExecute(serviceUrl, databaseId,context.getScheduler());
-		} catch (IOException e) {
-			logger.error("获取配置文件信息出错！");
-			e.printStackTrace();
-			System.exit(0);
+			commandRun.doExecute(jobDataMap,context.getScheduler());
 		} catch (SchedulerException e) {
 			e.printStackTrace();
 			logger.error("定时任务执行出错！");

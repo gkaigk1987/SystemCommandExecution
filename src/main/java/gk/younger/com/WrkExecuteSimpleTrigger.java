@@ -33,7 +33,7 @@ public class WrkExecuteSimpleTrigger {
 		this.scheduler = scheduler;
 	}
 	
-	public void run(List<DatabaseServiceBean> list) throws SchedulerException {
+	public void run(List<DatabaseServiceBean> list,Map<String, String> configMap) throws SchedulerException {
 		if(null != list && list.size() > 0) {
 			for (DatabaseServiceBean bean : list) {
 				//开始时间
@@ -48,15 +48,29 @@ public class WrkExecuteSimpleTrigger {
 				String databaseId = bean.getDatabaseId();
 				String serviceUrl = bean.getServiceUrl();
 				
+				String wrkt = configMap.get("wrkt");
+				String wrkc = configMap.get("wrkc");
+				String wrkd = configMap.get("wrkd");
+				String databaseServiceUrl = configMap.get("databaseServiceUrl");
+				String executeResponseUploadUrl = configMap.get("executeResponseUploadUrl");
+				String universityInstanceCode = configMap.get("universityInstanceCode");
+				
 				JobDetail jobDetail = JobBuilder.newJob(WrkExecuteJob.class)
 						.usingJobData("databaseId", databaseId)
 						.usingJobData("serviceUrl", serviceUrl)
+						.usingJobData("wrkt", wrkt)
+						.usingJobData("wrkc", wrkc)
+						.usingJobData("wrkd", wrkd)
+						.usingJobData("databaseServiceUrl", databaseServiceUrl)
+						.usingJobData("executeResponseUploadUrl", executeResponseUploadUrl)
+						.usingJobData("universityInstanceCode", universityInstanceCode)
 						.withIdentity("task-databaseId-"+databaseId, "group-1").build();
 				
 				SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().withIdentity("trigger-databaseId-"+databaseId,"group-1")
 								.withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(testFrequenceMinutes).repeatForever())
 								.startAt(DateBuilder.dateOf(startMap.get("hour"), startMap.get("minute"), 0))
 								.endAt(DateBuilder.dateOf(endMap.get("hour"), endMap.get("minute"), 0)).build();
+				
 				scheduler.scheduleJob(jobDetail, simpleTrigger);
 			}
 			scheduler.start();

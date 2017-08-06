@@ -121,5 +121,25 @@ public class CommonTest {
 		System.out.println(date);
 	}
 	
+	@Test
+	public void test07() {
+		DatabaseServiceBean bean1 = new DatabaseServiceBean();
+		bean1.setDatabaseId("1");
+		bean1.setServiceId("1");
+		bean1.setServiceUrl("http://www.qq.com/");
+		bean1.setTestStartTime("9:00");
+		bean1.setTestEndTime("19:00");
+		bean1.setTestFrequenceMinutes(5);
+		
+		DatabaseServiceBean bean2 = new DatabaseServiceBean();
+		bean2.setDatabaseId("1");
+		bean2.setServiceId("1");
+		bean2.setServiceUrl("http://www.qq.com/");
+		bean2.setTestStartTime("9:00");
+		bean2.setTestEndTime("19:00");
+		bean2.setTestFrequenceMinutes(6);
+		
+		System.out.println(bean1.equals(bean2));
+	}
 
 }

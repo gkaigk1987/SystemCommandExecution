@@ -8,7 +8,7 @@ import org.quartz.SchedulerException;
 
 public class ExecuteServiceTask {
 	
-	public void execute(List<Integer> list) {
+	/*public void execute(List<Integer> list) {
 		ExecutorService executorService = Executors.newFixedThreadPool(5);
 		CronTriggerExample example = new CronTriggerExample();
 		for(Integer i : list) {
@@ -42,6 +42,6 @@ public class ExecuteServiceTask {
 				e.printStackTrace();
 			}
 		}
-	}
+	}*/
 
 }

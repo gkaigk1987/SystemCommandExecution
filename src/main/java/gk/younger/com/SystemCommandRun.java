@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -89,6 +90,20 @@ public class SystemCommandRun {
 	}
 	
 	/**
+	 * 生成执行命令字符串
+	 * @param jobDataMap
+	 * @return
+	 */
+	private String genCommand(JobDataMap jobDataMap) {
+		String wrkt = jobDataMap.getString("wrkt");
+		String wrkc = jobDataMap.getString("wrkc");
+		String wrkd = jobDataMap.getString("wrkd");
+		String serviceUrl = jobDataMap.getString("serviceUrl");
+		String command = "wrk -t" + wrkt + " -c" + wrkc + " -d" + wrkd + " --latency " + serviceUrl;
+		return command;
+	}
+	
+	/**
 	 * 任务执行
 	 * @param serviceUrl
 	 * @param databaseId
@@ -96,17 +111,23 @@ public class SystemCommandRun {
 	 * @throws IOException
 	 * @throws SchedulerException 
 	 */
-	public void doExecute(String serviceUrl,String databaseId,Scheduler scheduler) throws IOException, SchedulerException {
-		Map<String, String> properties = getCommandProperties(serviceUrl, databaseId);
+	public void doExecute(JobDataMap jobDataMap,Scheduler scheduler) throws SchedulerException {
+		String command = genCommand(jobDataMap);
 		try {
-			String responese = exec(properties.get("command"));
+			String responese = exec(command);
 			logger.info("当前执行命令的返回信息为：\n{}",responese);
 			if(StringUtils.isNotEmpty(responese)) {
-				WrkResponseBean wrkResponseBean = dealWrkResponse(responese,properties);
-				this.uploadExecuteResult(wrkResponseBean);
+				Map<String, String> map = new HashMap<>();
+				map.put("databaseId", jobDataMap.getString("databaseId"));
+				map.put("serviceUrl", jobDataMap.getString("serviceUrl"));
+				map.put("wrkt", jobDataMap.getString("wrkt"));
+				map.put("wrkc", jobDataMap.getString("wrkc"));
+				map.put("wrkd", jobDataMap.getString("wrkd"));
+				WrkResponseBean wrkResponseBean = dealWrkResponse(responese,map);
+				uploadExecuteResult(wrkResponseBean,jobDataMap.getString("executeResponseUploadUrl"));
 			}
 		} catch (InterruptedException e) {
-			logger.error("Linux命令执行出错！wrk命令为:{}",properties.get("command"));
+			logger.error("Linux命令执行出错！wrk命令为:{}",command);
 			scheduler.shutdown();
 			e.printStackTrace();
 		} 
@@ -119,7 +140,7 @@ public class SystemCommandRun {
 	public WrkResponseBean dealWrkResponse(String response,Map<String, String> properties) {
 		WrkResponseBean responseBean = new WrkResponseBean();
 		responseBean.setDatabaseId(properties.get("databaseId"));
-		responseBean.setWrkUrl(properties.get("url"));
+		responseBean.setWrkUrl(properties.get("serviceUrl"));
 		responseBean.setWrkThreads(Integer.valueOf(properties.get("wrkt")));
 		responseBean.setWrkConnections(Integer.valueOf(properties.get("wrkc")));
 		responseBean.setWrkDuration(properties.get("wrkd"));
@@ -223,7 +244,7 @@ public class SystemCommandRun {
 		
 		String command = "wrk -t" + wrkt + " -c" + wrkc + " -d" + wrkd + " --latency " + url;
 		map.put("command", command);
-		map.put("url", url);
+		map.put("serviceUrl", url);
 		map.put("databaseId", databaseId);
 		return map;
 	}
@@ -245,6 +266,26 @@ public class SystemCommandRun {
 			logger.error("未配置获取学校序列号!");
 			return null;
 		}
+		List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+		formparams.add(new BasicNameValuePair("universityInstanceCode", universityInstanceCode));
+		JSONObject doPost = HttpClientUtil.doPost(serviceUrl, formparams);//HttpClient进行post请求
+		if(null == doPost || doPost.isEmpty()) {
+			logger.error("未获取到数据库服务列表!");
+			return null;
+		}
+		String array = JSONObject.toJSONString(doPost.get("databaseService"));
+		List<DatabaseServiceBean> databaseServiceList = JSON.parseArray(array, DatabaseServiceBean.class);
+		return databaseServiceList;
+	}
+	
+	/**
+	 * 获取需要压测的数据库列表信息
+	 * @return
+	 * @throws IOException
+	 */
+	public List<DatabaseServiceBean> getRemoteLocalDatabaseService(Map<String, String> configMap) throws IOException {
+		String universityInstanceCode = configMap.get("universityInstanceCode");
+		String serviceUrl = configMap.get("databaseServiceUrl");
 		List<NameValuePair> formparams = new ArrayList<NameValuePair>();
 		formparams.add(new BasicNameValuePair("universityInstanceCode", universityInstanceCode));
 		JSONObject doPost = HttpClientUtil.doPost(serviceUrl, formparams);//HttpClient进行post请求
@@ -329,9 +370,8 @@ public class SystemCommandRun {
 	 * @param wrkResponseBean
 	 * @throws IOException
 	 */
-	public void uploadExecuteResult(WrkResponseBean wrkResponseBean) throws IOException {
-		String url = PropertiesUtil.getUserConfigProperties().getProperty("executeResponseUploadUrl");
-		JSONObject doPost = HttpClientUtil.doPost(url, genPostParams(wrkResponseBean));
+	public void uploadExecuteResult(WrkResponseBean wrkResponseBean,String uploadUrl) {
+		JSONObject doPost = HttpClientUtil.doPost(uploadUrl, genPostParams(wrkResponseBean));
 		if(doPost.getBooleanValue("succ")) {
 			logger.info("执行数据上传成功,数据库ID为{},url为{}",wrkResponseBean.getDatabaseId(),wrkResponseBean.getWrkUrl());
 		}else {
