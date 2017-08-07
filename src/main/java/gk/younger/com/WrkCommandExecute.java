@@ -163,16 +163,16 @@ public class WrkCommandExecute {
 	 * 定时任务执行(测试)
 	 * @param remoteLocalDatabaseService
 	 */
-	public void scheduleTaskExecForTest(List<DatabaseServiceBean> remoteLocalDatabaseService,Scheduler scheduler) {
-		try {
-			CronTriggerExample example = new CronTriggerExample(scheduler);
-			example.run(remoteLocalDatabaseService);
-		} catch (SchedulerException e) {
-			logger.error("定时任务执行出错！");
-			e.printStackTrace();
-			System.exit(0);
-		}
-	}
+//	public void scheduleTaskExecForTest(List<DatabaseServiceBean> remoteLocalDatabaseService,Scheduler scheduler) {
+//		try {
+//			CronTriggerExample example = new CronTriggerExample(scheduler);
+//			example.run(remoteLocalDatabaseService);
+//		} catch (SchedulerException e) {
+//			logger.error("定时任务执行出错！");
+//			e.printStackTrace();
+//			System.exit(0);
+//		}
+//	}
 	
 	/**
 	 * 原始数据与最新数据库信息比较
