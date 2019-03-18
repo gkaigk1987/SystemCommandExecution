@@ -1,11 +1,5 @@
 package gk.younger.com.quartz;
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.quartz.SchedulerException;
-
 public class ExecuteServiceTask {
 	
 	/*public void execute(List<Integer> list) {

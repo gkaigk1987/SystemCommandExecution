@@ -42,6 +42,7 @@ public class BadJob1 implements Job {
 
   // Logging
   private static Logger _log = LoggerFactory.getLogger(BadJob1.class);
+  @SuppressWarnings("unused")
   private int calculation;
 
   /**

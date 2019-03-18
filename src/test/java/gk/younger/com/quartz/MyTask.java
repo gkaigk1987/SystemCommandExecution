@@ -13,6 +13,14 @@ public class MyTask implements Callable<String> {
 	public MyTask(String info) {
 		this.info = info;
 	}
+	
+	public String getInfo() {
+		return info;
+	}
+
+	public void setInfo(String info) {
+		this.info = info;
+	}
 
 	@Override
 	public String call() throws Exception {
