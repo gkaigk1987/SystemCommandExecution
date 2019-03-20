@@ -77,6 +77,33 @@ public class HttpClientUtil {
 	}
 	
 	/**
+	 * post传入JSON字符串，此方法需要服务端使用@RequestBody String XXX来接收参数
+	 * @param url
+	 * @param json
+	 * @return
+	 */
+	public static JSONObject doPost(String url,String json) {
+		CloseableHttpClient httpclient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(url);
+        JSONObject response = null;
+        try {
+        	StringEntity s = new StringEntity(json, Consts.UTF_8);
+            s.setContentEncoding("UTF-8");
+            s.setContentType("application/json");
+            post.setHeader("Content-Type", "application/json;charset=UTF-8");
+            post.setEntity(s);
+            HttpResponse res = httpclient.execute(post);
+            if(res.getStatusLine().getStatusCode() == HttpStatus.SC_OK){
+                String result = EntityUtils.toString(res.getEntity());
+                response = JSONObject.parseObject(result);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return response;
+	}
+	
+	/**
 	 * httpclient的get方法
 	 * @param url
 	 * @return
@@ -96,5 +123,4 @@ public class HttpClientUtil {
         }
         return response;
 	}
-
 }
